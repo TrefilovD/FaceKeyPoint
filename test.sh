@@ -1,0 +1,1 @@
+python3 main.py --mode test --config /mnt/e/WORK_DL/VisionLab/src/configs/train.yaml
