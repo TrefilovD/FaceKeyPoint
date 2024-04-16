@@ -1,0 +1,35 @@
+task_info:
+  save_dir: "./src/tasks_info"
+  name: "task_test_menpo_15"
+
+
+test_cfg:
+  device: "cuda"
+
+network:
+  name: "onet"
+  params:
+      input_size: [96, 96]
+      in_channels: 3
+      out_channels: 136
+      weights: "/mnt/e/WORK_DL/VisionLab/src/tasks_info/task_train_menpo_15/best_model.pth"
+
+criterion:
+  name: "L2Loss"
+  params: {}
+
+test_dataset:
+  dataset:
+    ds_dir: "/mnt/e/WORK_DL/datasets/landmarks_task/Menpo/test"
+    suffix: "[jp][pn]g"
+    use_dlib_detector: False
+    use_mask: False
+    input_size: [96, 96]
+
+  transforms:
+    input_size: [96, 96]
+
+test_dataloader:
+  batch_size: 32
+  shuffle: False
+  num_workers: 0

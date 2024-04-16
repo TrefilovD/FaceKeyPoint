@@ -1,0 +1,12 @@
+tqdm
+torch
+pillow
+numpy
+albumentations
+setuptools
+wheel
+cmake==3.25
+build
+dlib==19.24.2
+matplotlib
+clearml
