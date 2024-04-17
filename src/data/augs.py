@@ -10,12 +10,6 @@ TRANSFORMS = {
     # "normalize": A.Normalize
 }
 
-horizontal_flip = False
-rotation_augmentation = True
-brightness_augmentation = True
-shift_augmentation = True
-random_noise_augmentation = True
-
 
 def get_transforms(input_size, mode):
     if mode == "train":
@@ -23,14 +17,14 @@ def get_transforms(input_size, mode):
             [
                 A.Resize(*input_size, cv2.INTER_NEAREST, True),
                 A.OneOf([
-                    A.Rotate(30, p=0.5),
-                    A.VerticalFlip(p=0.5),
-                    A.HorizontalFlip(p=0.5),
+                    A.Rotate(60, always_apply=True),
+                    # A.VerticalFlip(always_apply=True),
+                    A.HorizontalFlip(always_apply=True),
                 ]),
                 A.OneOf([
-                    A.RandomBrightnessContrast(p=0.5),
-                    A.ShiftScaleRotate(p=0.5),
-                    A.GaussNoise(p=0.5)
+                    A.RandomBrightnessContrast(always_apply=True),
+                    A.ShiftScaleRotate(always_apply=True),
+                    A.GaussNoise(always_apply=True)
                 ])
             ],
             keypoint_params=A.KeypointParams(format='xy', label_fields=["class_labels"], remove_invisible=False),

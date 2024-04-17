@@ -59,7 +59,7 @@ val_dataset:
     input_size: [96, 96]
 
   transforms:
-    input_size: [96, 96]
+    input_size: [256, 256]
 
 val_dataloader:
   batch_size: 32

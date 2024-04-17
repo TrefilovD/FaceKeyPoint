@@ -29,6 +29,7 @@ class FaceDataset(torch.utils.data.Dataset):
 
         self.class_labels = list(range(68))
         self.eyes_idx=[36,39,42,45]
+        self.position4horizontalflip = self.get_position_map_68()
 
     def __len__(self) -> int:
         return len(self.indexes)
@@ -98,17 +99,18 @@ class FaceDataset(torch.utils.data.Dataset):
         if self.transforms:
             data = self.transforms(**data)
 
-        data["keypoints"] = torch.tensor(data["keypoints"], dtype=torch.float32)
+        # data["keypoints"] = torch.tensor(data["keypoints"], dtype=torch.float32)
 
-        horizontal_flipped = data["keypoints"][36, 0] > data["keypoints"][42, 0]
+        horizontal_flipped = data["keypoints"][36][0] > data["keypoints"][42][0]
         if horizontal_flipped:
-            data["keypoints"][:, 0] = self.input_size[0] - data["keypoints"][:, 0]
+            # data["keypoints"][:, 0] = self.input_size[0] - data["keypoints"][:, 0]
+            data["keypoints"] = [data["keypoints"][i] for i in self.position4horizontalflip]
 
-        vertical_flipped = data["keypoints"][8, 1] < data["keypoints"][27, 1]
-        if vertical_flipped:
-            data["keypoints"][:, 1] = self.input_size[1] - data["keypoints"][:, 1]
+        # vertical_flipped = data["keypoints"][8, 1] < data["keypoints"][27, 1]
+        # if vertical_flipped:
+        #     data["keypoints"][:, 1] = self.input_size[1] - data["keypoints"][:, 1]
 
-
+        data["keypoints"] = torch.tensor(data["keypoints"], dtype=torch.float32)
         if self.use_mask:
             mask = torch.stack([
                 torch.BoolTensor(data["keypoints"][:, 0] >= 0) & \
@@ -126,6 +128,64 @@ class FaceDataset(torch.utils.data.Dataset):
             torch.from_numpy(offset),
             mask.view(-1)
         )
+
+    @staticmethod
+    def get_position_map_68():
+        postition_map = {i: 16 - i for i in range(17)}
+        postition_map.update(
+            {17+i:26 - i for i in range(10)}
+        )
+        postition_map.update(
+            {i:i for i in range(27, 31)}
+        )
+        postition_map.update(
+            {31 + i:35 - i for i in range(5)}
+        )
+        postition_map.update(
+            {31 + i:35 - i for i in range(5)}
+        )
+        postition_map.update(
+            {
+                36: 45,
+                37: 44,
+                38: 43,
+                39: 42,
+                40: 47,
+                41: 46,
+                42: 39,
+                43: 38,
+                44: 37,
+                45: 36,
+                46: 41,
+                47: 40
+            }
+        )
+        postition_map.update(
+            {
+                48: 54,
+                49: 53,
+                50: 52,
+                51: 51,
+                52: 50,
+                53: 49,
+                54: 48,
+                55: 59,
+                56: 58,
+                57: 57,
+                58: 56,
+                59: 55,
+                60: 64,
+                61: 63,
+                62: 62,
+                63: 61,
+                64: 60,
+                65: 67,
+                66: 66,
+                67: 65
+            }
+        )
+        postition = np.array(sorted(list(postition_map.items()), key=lambda x: x[0]))[:, 1]
+        return postition
 
 
 def build_dataset(mode, cfg):
